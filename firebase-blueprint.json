@@ -1,0 +1,89 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Basic profile for the student",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "photoURL": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "theme": { "type": "string", "enum": ["light", "dark"] }
+      },
+      "required": ["displayName", "email", "createdAt"]
+    },
+    "StudyLog": {
+      "title": "Study Log",
+      "description": "A single study session record",
+      "type": "object",
+      "properties": {
+        "subject": { "type": "string" },
+        "hours": { "type": "number" },
+        "mood": { "type": "string" },
+        "rating": { "type": "integer" },
+        "notes": { "type": "string" },
+        "date": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["subject", "hours", "date", "createdAt"]
+    },
+    "Project": {
+      "title": "Project",
+      "description": "A developer project or lab",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "tags": { "type": "string" },
+        "snippet": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "description", "createdAt"]
+    },
+    "Resource": {
+      "title": "Learning Resource",
+      "description": "A link or course resource",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "url", "createdAt"]
+    },
+    "Mission": {
+      "title": "Study Mission",
+      "description": "A todo item or learning goal",
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "done": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["text", "done", "createdAt"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "UserProfile",
+      "description": "The user's central profile"
+    },
+    "users/{userId}/logs/{logId}": {
+      "schema": "StudyLog",
+      "description": "A collection of study sessions"
+    },
+    "users/{userId}/projects/{projectId}": {
+      "schema": "Project",
+      "description": "A collection of dev projects"
+    },
+    "users/{userId}/library/{resourceId}": {
+      "schema": "Resource",
+      "description": "A collection of saved resources"
+    },
+    "users/{userId}/missions/{missionId}": {
+      "schema": "Mission",
+      "description": "A collection of todos/missions"
+    }
+  }
+}

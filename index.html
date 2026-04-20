@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neha Study Tracker ❤️ | Built by Sakib</title>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-navy-950 text-slate-200 min-h-screen flex flex-col font-sans transition-colors duration-300 overflow-x-hidden">
+
+    <!-- Top Header -->
+    <header class="sticky top-0 z-50 bg-navy-950/80 backdrop-blur-lg border-b border-white/5 py-4 px-6 flex justify-between items-center">
+        <div class="flex flex-col">
+            <h1 class="text-sm font-bold text-white tracking-tight">Neha Study Tracker ❤️</h1>
+            <p class="text-[10px] text-teal-400 font-medium uppercase tracking-widest">Made with love by Sakib</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <div id="auth-section" class="flex items-center gap-2">
+                <button id="login-btn" class="text-[9px] font-bold text-slate-400 uppercase tracking-widest hover:text-white transition-all">Sign In</button>
+            </div>
+            <button id="theme-toggle" class="p-2.5 rounded-2xl bg-white/5 border border-white/10 text-slate-400 hover:text-teal-400 transition-all active:scale-95">
+                <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Dynamic Content -->
+    <main id="app-content" class="flex-grow px-6 pt-4 pb-32 max-w-2xl mx-auto w-full">
+        <!-- Views will be injected here via script.js -->
+        <div class="flex flex-col items-center justify-center py-20 animate-pulse text-center space-y-4">
+            <div class="w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Alhamdulillah, loading your center...</p>
+        </div>
+    </main>
+
+    <!-- Navigation Drawer / Bottom Bar -->
+    <nav class="fixed bottom-6 left-6 right-6 h-18 bg-navy-900/95 backdrop-blur-2xl border border-white/10 rounded-3xl z-50 shadow-2xl glass-effect flex items-center">
+        <div class="flex items-center justify-around w-full px-2 overflow-x-auto scrollbar-hide gap-1">
+            <button class="nav-btn active flex flex-col items-center gap-1 min-w-[65px] py-2 group" data-view="home">
+                <i data-lucide="home" class="w-5 h-5 transition-all group-active:scale-75"></i>
+                <span class="text-[8px] font-bold uppercase tracking-tighter">Home</span>
+            </button>
+            <button class="nav-btn flex flex-col items-center gap-1 text-slate-500 min-w-[65px] py-2 group" data-view="log">
+                <i data-lucide="edit-3" class="w-5 h-5 transition-all group-active:scale-75"></i>
+                <span class="text-[8px] font-bold uppercase tracking-tighter">Journal</span>
+            </button>
+            <button class="nav-btn flex flex-col items-center gap-1 text-slate-500 min-w-[65px] py-2 group" data-view="sandbox">
+                <i data-lucide="terminal" class="w-5 h-5 transition-all group-active:scale-75"></i>
+                <span class="text-[8px] font-bold uppercase tracking-tighter">Code</span>
+            </button>
+            <button class="nav-btn flex flex-col items-center gap-1 text-slate-500 min-w-[65px] py-2 group" data-view="ai">
+                <i data-lucide="sparkles" class="w-5 h-5 transition-all group-active:scale-75"></i>
+                <span class="text-[8px] font-bold uppercase tracking-tighter">Buddy</span>
+            </button>
+            <button class="nav-btn flex flex-col items-center gap-1 text-slate-500 min-w-[65px] py-2 group" data-view="focus">
+                <i data-lucide="timer" class="w-5 h-5 transition-all group-active:scale-75"></i>
+                <span class="text-[8px] font-bold uppercase tracking-tighter">Focus</span>
+            </button>
+            <button class="nav-btn flex flex-col items-center gap-1 text-slate-500 min-w-[65px] py-2 group" data-view="hub">
+                <i data-lucide="layout-grid" class="w-5 h-5 transition-all group-active:scale-75"></i>
+                <span class="text-[8px] font-bold uppercase tracking-tighter">Hub</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Shared Modal Container -->
+    <div id="modal-container" class="fixed inset-0 z-[60] hidden flex items-center justify-center px-4 bg-navy-950/80 backdrop-blur-md transition-all duration-300 opacity-0 scale-95 pointer-events-none">
+        <div id="modal-content" class="w-full max-w-sm bg-navy-900 border border-white/10 rounded-[2.5rem] p-8 shadow-2xl overflow-y-auto max-h-[85vh]">
+            <!-- Dynamic Modal Content -->
+        </div>
+    </div>
+
+    <!-- External Engines -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+
+    <!-- Core Script -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>

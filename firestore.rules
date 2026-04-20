@@ -1,0 +1,102 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // --------------------------------------------------------------------------------
+    // PILLAR 0 & 1: GLOBAL SAFETY NET & HELPER DEFINITIONS
+    // --------------------------------------------------------------------------------
+    match /{document=**} { allow read, write: if false; }
+
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function isVerified() { return request.auth.token.email_verified == true; }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+
+    // --------------------------------------------------------------------------------
+    // PILLAR 2: VALIDATION BLUEPRINTS
+    // --------------------------------------------------------------------------------
+    
+    function isValidUserProfile(data) {
+        return data.keys().hasAll(['displayName', 'email', 'createdAt']) && 
+               data.displayName is string && data.displayName.size() <= 100 &&
+               data.email is string && data.email.size() <= 100 &&
+               data.createdAt == request.time;
+    }
+
+    function isValidStudyLog(data) {
+        return data.keys().hasAll(['subject', 'hours', 'date', 'mood', 'rating', 'notes', 'createdAt']) &&
+               data.subject is string && data.subject.size() <= 100 &&
+               data.hours is number && data.hours >= 0 && data.hours <= 24 &&
+               data.date is string && data.date.size() <= 20 &&
+               data.mood is string && data.mood.size() <= 50 &&
+               data.rating is int && data.rating >= 1 && data.rating <= 10 &&
+               data.notes is string && data.notes.size() <= 2000 &&
+               data.createdAt == request.time;
+    }
+
+    function isValidProject(data) {
+        return data.keys().hasAll(['title', 'description', 'tags', 'snippet', 'createdAt']) &&
+               data.title is string && data.title.size() <= 200 &&
+               data.description is string && data.description.size() <= 5000 &&
+               data.tags is string && data.tags.size() <= 500 &&
+               data.snippet is string && data.snippet.size() <= 10000 &&
+               data.createdAt == request.time;
+    }
+
+    function isValidResource(data) {
+        return data.keys().hasAll(['title', 'url', 'createdAt']) &&
+               data.title is string && data.title.size() <= 200 &&
+               data.url is string && data.url.size() <= 1000 &&
+               data.url.matches('^https?://.*') &&
+               data.createdAt == request.time;
+    }
+
+    function isValidMission(data) {
+        return data.keys().hasAll(['text', 'done', 'createdAt']) &&
+               data.text is string && data.text.size() <= 500 &&
+               data.done is bool &&
+               data.createdAt == request.time;
+    }
+
+    // --------------------------------------------------------------------------------
+    // PILLAR 1 & 8: MATCH BLOCKS & SECURE LIST QUERIES
+    // --------------------------------------------------------------------------------
+
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isVerified() && isValidUserProfile(incoming());
+      allow update: if isOwner(userId) && (
+          // Action: Profile Update
+          isValidUserProfile(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'theme'])
+      );
+
+      // Subcollections
+      match /logs/{logId} {
+        allow list, get: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(logId) && isValidStudyLog(incoming());
+        allow delete: if isOwner(userId);
+      }
+
+      match /projects/{projectId} {
+        allow list, get: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(projectId) && isValidProject(incoming());
+        allow update: if isOwner(userId) && isValidProject(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['title', 'description', 'tags', 'snippet']);
+        allow delete: if isOwner(userId);
+      }
+
+      match /library/{resourceId} {
+        allow list, get: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(resourceId) && isValidResource(incoming());
+        allow delete: if isOwner(userId);
+      }
+
+      match /missions/{missionId} {
+        allow list, get: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(missionId) && isValidMission(incoming());
+        allow update: if isOwner(userId) && isValidMission(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['text', 'done']);
+        allow delete: if isOwner(userId);
+      }
+    }
+  }
+}

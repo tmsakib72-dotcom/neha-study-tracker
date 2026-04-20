@@ -1,0 +1,128 @@
+/* style.css - Neha Study Tracker Visual System */
+@import "tailwindcss";
+
+@theme {
+    --color-teal-400: #2dd4bf;
+    --color-teal-500: #14b8a6;
+    --color-teal-600: #0d9488;
+    --color-navy-800: #1e293b;
+    --color-navy-900: #0f172a;
+    --color-navy-950: #020617;
+    
+    --font-sans: "Inter", "Segoe UI", "Roboto", sans-serif;
+}
+
+:root {
+    --teal-glow: rgba(45, 212, 191, 0.2);
+    --navy-glow: rgba(30, 41, 59, 0.4);
+}
+
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    scrollbar-width: none;
+    -webkit-font-smoothing: antialiased;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+/* Glassmorphism Classes */
+.glass-effect {
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.card-gradient {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+/* Animations */
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.view-transition {
+    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Navigation Active State */
+.nav-btn {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.nav-btn.active {
+    color: #2dd4bf;
+}
+
+.nav-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    width: 6px;
+    height: 6px;
+    background: #2dd4bf;
+    border-radius: 50%;
+    box-shadow: 0 0 12px #2dd4bf;
+}
+
+/* Custom UI Components */
+.input-base {
+    @apply w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm text-white focus:outline-none focus:border-teal-500/50 focus:ring-4 focus:ring-teal-500/10 transition-all placeholder:text-slate-600;
+}
+
+.btn-primary {
+    @apply w-full bg-teal-500 hover:bg-teal-400 text-navy-950 font-bold py-4 rounded-2xl shadow-lg shadow-teal-500/20 active:scale-95 transition-all flex items-center justify-center gap-2;
+}
+
+/* Modal States */
+#modal-container.active {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+/* Scrollbar Hide */
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* Chart Styles - Circular Progress Placeholder */
+.circular-progress {
+    --progress: 0%;
+    background: conic-gradient(#2dd4bf var(--progress), transparent 0deg);
+}
+
+/* Tags Layout */
+.project-tag {
+    @apply px-3 py-1 rounded-full bg-white/5 border border-white/5 text-[9px] font-bold text-slate-400 uppercase tracking-widest;
+}
+
+/* Sandbox Tabs */
+.sandbox-tab {
+    transition: all 0.3s;
+    border-bottom: 2px solid transparent;
+}
+.sandbox-tab.active {
+    color: #2dd4bf;
+    border-bottom-color: #2dd4bf;
+}
+
+/* AI Bubbles */
+.ai-bubble {
+    @apply p-4 rounded-3xl max-w-[85%] text-sm leading-relaxed;
+}
+.buddy-msg {
+    @apply bg-teal-600 text-white rounded-bl-none shadow-lg shadow-teal-500/10;
+}
+.user-msg {
+    @apply bg-navy-900 text-white border border-white/10 rounded-tl-none ml-auto;
+}
