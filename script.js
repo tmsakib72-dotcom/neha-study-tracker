@@ -6,6 +6,7 @@ import { GoogleGenAI } from "@google/genai";
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, orderBy, serverTimestamp, getDocFromServer } from "firebase/firestore";
+import { injectSpeedInsights } from "@vercel/speed-insights";
 import firebaseConfig from "./firebase-applet-config.json";
 
 // --- Firebase Initialization ---
@@ -72,6 +73,9 @@ const MOTIVATIONAL_QUOTES = [
 
 // --- Core Initialization ---
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Vercel Speed Insights
+    injectSpeedInsights();
+    
     initTheme();
     setupNavigation();
     initAuth();
