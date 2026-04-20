@@ -6,8 +6,24 @@ import { GoogleGenAI } from "@google/genai";
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, orderBy, serverTimestamp, getDocFromServer } from "firebase/firestore";
-import { injectSpeedInsights } from "@vercel/speed-insights";
 import firebaseConfig from "./firebase-applet-config.json";
+
+// --- Error Handling & Resilience ---
+window.onerror = function(msg, url, lineNo, columnNo, error) {
+    console.error("Global Error:", msg, error);
+    const appContent = document.getElementById('app-content');
+    if (appContent && appContent.innerHTML.includes('loading')) {
+        appContent.innerHTML = `
+            <div class="p-10 text-center space-y-4">
+                <div class="text-rose-500 font-black text-2xl">BISMILLAH ERROR!</div>
+                <p class="text-slate-400 text-xs">${msg}</p>
+                <div class="text-[10px] text-slate-500 italic mt-4">Check Vercel Environment Variables or Browser Console</div>
+                <button onclick="location.reload()" class="w-full bg-navy-900 border border-white/5 py-2 px-6 rounded-xl text-xs mt-4">Retry Reset</button>
+            </div>
+        `;
+    }
+    return false;
+};
 
 // --- Firebase Initialization ---
 const app = initializeApp(firebaseConfig);
@@ -49,7 +65,11 @@ const state = {
 };
 
 // AI Engine Setup
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const GEMINI_KEY = process.env.GEMINI_API_KEY;
+if (!GEMINI_KEY || GEMINI_KEY === 'undefined' || GEMINI_KEY === '') {
+    console.warn("⚠️ GEMINI_API_KEY is missing! AI features will be disabled.");
+}
+const ai = new GoogleGenAI({ apiKey: GEMINI_KEY || 'MISSING_KEY' });
 const chatModel = "gemini-3-flash-preview";
 
 // Sandbox Constants
@@ -73,9 +93,6 @@ const MOTIVATIONAL_QUOTES = [
 
 // --- Core Initialization ---
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize Vercel Speed Insights
-    injectSpeedInsights();
-    
     initTheme();
     setupNavigation();
     initAuth();
