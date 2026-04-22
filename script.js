@@ -79,6 +79,7 @@ const SANDBOX_TEMPLATES = {
     python: "# Python 3.11 Runtime\nprint('Hello, Sakib!')\n\nfor i in range(5):\n    print(f'Mission {i+1} complete!')",
     web: "<!-- Web Lab -->\n<div style='text-align: center; padding: 50px; font-family: sans-serif;'>\n  <h1 style='color: #14b8a6;'>Hi Neha Sister!</h1>\n</div>",
     js: "// JS Playground\nconsole.log('Hello Neha Sister!');",
+    bash: "# Linux shell sandbox\n# Try: pwd, ls, whoami, date, uname -a, help\npwd\nls",
     c: "// C Programming\n#include <stdio.h>\nint main() { printf(\"Hello Neha!\\n\"); return 0; }",
     cpp: "// C++ Programming\n#include <iostream>\nint main() { std::cout << \"Object Oriented!\\n\"; return 0; }"
 };
@@ -405,7 +406,7 @@ function renderLog() {
 }
 
 function renderSandbox() {
-    const modes = ['python', 'js', 'web', 'c', 'cpp'];
+    const modes = ['python', 'js', 'web', 'bash', 'c', 'cpp'];
     return `
         <div class="space-y-4">
             <div class="flex justify-between items-center px-1">
@@ -423,11 +424,17 @@ function renderSandbox() {
 
             <div class="h-[350px] bg-navy-950 rounded-3xl border border-white/5 relative overflow-hidden">
                 <div class="bg-navy-900 py-1.5 px-4 flex justify-between border-b border-white/5">
-                    <span id="editor-label" class="text-[9px] font-black text-slate-500 tracking-widest uppercase">main.${sandboxMode === 'python' ? 'py' : sandboxMode}</span>
+                    <span id="editor-label" class="text-[9px] font-black text-slate-500 tracking-widest uppercase">main.${sandboxMode === 'python' ? 'py' : sandboxMode === 'bash' ? 'sh' : sandboxMode}</span>
                     <span class="text-[9px] text-teal-500 font-mono">Sakib IDE v1.5</span>
                 </div>
                 <textarea id="code-editor" class="w-full h-full bg-transparent p-5 text-teal-400 font-mono text-xs outline-none resize-none" spellcheck="false"></textarea>
             </div>
+            ${sandboxMode === 'bash' ? `
+                <div class="bg-navy-900 border border-white/5 rounded-2xl p-3 text-[10px] text-slate-400">
+                    <p class="uppercase tracking-widest text-[9px] text-teal-400 font-bold mb-2">Linux Quick Check</p>
+                    <p>Run one command per line. This is a safe simulator for demo commands.</p>
+                </div>
+            ` : ''}
 
             <div class="space-y-2">
                 <div class="flex justify-between px-2 text-[9px] font-bold text-slate-500 uppercase">
@@ -609,6 +616,13 @@ window.runCode = async () => {
         return;
     }
 
+    if (sandboxMode === 'bash') {
+        window.clearConsole();
+        logToConsole("Linux shell simulator booted.");
+        runBashSimulation(code);
+        return;
+    }
+
     if (['c', 'cpp'].includes(sandboxMode)) {
         window.clearConsole();
         logToConsole(`Compiling ${sandboxMode.toUpperCase()} via Neural Bridge...`);
@@ -632,6 +646,50 @@ window.runCode = async () => {
         logToConsole(out || "Success! (No output)");
     } catch (e) { logToConsole("PY ERR: " + e.message, true); }
 };
+
+function runBashSimulation(script) {
+    const commands = script
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line && !line.startsWith('#'));
+
+    if (commands.length === 0) {
+        logToConsole("No commands provided.", true);
+        return;
+    }
+
+    const fakeFiles = ['notes.txt', 'projects/', 'journal.md', 'scripts/'];
+    const commandMap = {
+        pwd: () => '/home/neha/study-tracker',
+        ls: () => fakeFiles.join('  '),
+        whoami: () => 'neha',
+        date: () => new Date().toUTCString(),
+        'uname -a': () => 'Linux study-vm 6.8.0 x86_64 GNU/Linux',
+        help: () => 'Available: pwd, ls, whoami, date, uname -a, echo, cat notes.txt, clear',
+        'cat notes.txt': () => 'Focus: OS Scheduling\nReview: Python dicts\nPlan: 2h DSA practice'
+    };
+
+    commands.forEach((cmd) => {
+        if (cmd === 'clear') {
+            window.clearConsole();
+            return;
+        }
+
+        if (cmd.startsWith('echo ')) {
+            logToConsole(`$ ${cmd}`);
+            logToConsole(cmd.slice(5).trim() || '');
+            return;
+        }
+
+        const output = commandMap[cmd];
+        logToConsole(`$ ${cmd}`);
+        if (output) {
+            logToConsole(output());
+        } else {
+            logToConsole(`bash: ${cmd}: command not found`, true);
+        }
+    });
+}
 
 window.clearConsole = () => { document.getElementById('console-output').innerHTML = '<span class="opacity-20 italic">Console Purged.</span>'; };
 function logToConsole(msg, err = false) {
